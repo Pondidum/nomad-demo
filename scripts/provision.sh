@@ -4,17 +4,27 @@
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl vim apt-transport-https ca-certificates software-properties-common
 
+LOCAL_DOWNLOAD=1
+
 # Download Nomad
-NOMAD_VERSION=0.8.1
-CONSUL_VERSION=1.4.0
+NOMAD_VERSION=0.8.7
+CONSUL_VERSION=1.4.3
 
 cd /tmp/
 
-echo "Fetching Nomad..."
-curl -sSL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip
+if [ $LOCAL_DOWNLOAD -eq "1" ]; then
+    echo "Fetching Nomad from /vagrant/binaries"
+    cp /vagrant/binaries/nomad_${NOMAD_VERSION}_linux_amd64.zip nomad.zip
 
-echo "Fetching Consul..."
-curl -sSL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip -o consul.zip
+    echo "Fetching Consul from /vagrant/binaries"
+    cp /vagrant/binaries/consul_${CONSUL_VERSION}_linux_amd64.zip consul.zip
+else
+    echo "Fetching Nomad from Hashicorp..."
+    curl -sSL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip
+
+    echo "Fetching Consul from Hashicorp..."
+    curl -sSL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip -o consul.zip
+fi
 
 echo "Installing Nomad..."
 unzip nomad.zip

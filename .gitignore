@@ -1,2 +1,4 @@
-.vagrant
+.vagrant/
+binaries/
+
 server_ip

@@ -2,7 +2,13 @@
 
 # Update apt and get dependencies
 sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl vim apt-transport-https ca-certificates software-properties-common
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    unzip \
+    curl \
+    vim \
+    apt-transport-https \
+    ca-certificates \
+    software-properties-common
 
 LOCAL_DOWNLOAD=1
 
@@ -34,14 +40,21 @@ sudo mkdir -p /etc/nomad.d
 sudo chmod a+w /etc/nomad.d
 
 echo "Installing Docker..."
-if [[ -f /etc/apt/sources.list.d/docker.list ]]; then
-    echo "Docker repository already installed; Skipping"
+if [ $LOCAL_DOWNLOAD -eq "1" ]; then
+    echo "installing from /vagrant/binaries"
+    sudo dpkg -i /vagrant/binaries/containerd.io_1.2.4-1_amd64.deb
+    sudo dpkg -i /vagrant/binaries/docker-ce-cli_18.09.3~3-0~ubuntu-xenial_amd64.deb
+    sudo dpkg -i /vagrant/binaries/docker-ce_18.09.3~3-0~ubuntu-xenial_amd64.deb
 else
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt-get update
+    if [[ -f /etc/apt/sources.list.d/docker.list ]]; then
+        echo "Docker repository already installed; Skipping"
+    else
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt-get update
+    fi
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce
 fi
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce
 
 # Restart docker to make sure we get the latest version of the daemon if there is an upgrade
 sudo service docker restart
@@ -55,9 +68,13 @@ sudo install consul /usr/bin/consul
 
 for bin in cfssl cfssl-certinfo cfssljson
 do
-	echo "Installing $bin..."
-	curl -sSL https://pkg.cfssl.org/R1.2/${bin}_linux-amd64 > /tmp/${bin}
-	sudo install /tmp/${bin} /usr/local/bin/${bin}
+    echo "Installing $bin..."
+    if [ $LOCAL_DOWNLOAD -eq "1" ]; then
+        sudo install /vagrant/binaries/${bin} /usr/local/bin/${bin}
+    else
+        curl -sSL https://pkg.cfssl.org/R1.2/${bin}_linux-amd64 > /tmp/${bin}
+        sudo install /tmp/${bin} /usr/local/bin/${bin}
+    fi
 done
 
 echo "Installing autocomplete..."

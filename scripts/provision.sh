@@ -79,3 +79,11 @@ done
 
 echo "Installing autocomplete..."
 nomad -autocomplete-install
+
+echo "installing dotnet core..."
+wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+sudo DEBIAN_FRONTEND=noninteractive apt-get install apt-transport-https -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install aspnetcore-runtime-2.2 -y

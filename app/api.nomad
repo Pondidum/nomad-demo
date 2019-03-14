@@ -1,4 +1,4 @@
-job "hello-api" {
+job "demo-api" {
   datacenters = ["dc1"]
   type = "service"
 

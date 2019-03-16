@@ -20,10 +20,10 @@ cd /tmp/
 
 if [ $LOCAL_DOWNLOAD -eq "1" ]; then
     echo "Fetching Nomad from /vagrant/binaries"
-    cp /vagrant/binaries/nomad_${NOMAD_VERSION}_linux_amd64.zip nomad.zip
+    cp /vagrant/binaries/nomad.zip nomad.zip
 
     echo "Fetching Consul from /vagrant/binaries"
-    cp /vagrant/binaries/consul_${CONSUL_VERSION}_linux_amd64.zip consul.zip
+    cp /vagrant/binaries/consul.zip consul.zip
 else
     echo "Fetching Nomad from Hashicorp..."
     curl -sSL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip

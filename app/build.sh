@@ -1,5 +1,16 @@
 #! /bin/bash
 
-dotnet build HelloApi.sln
-dotnet publish --no-build --output ../../.build
-7z a helloapi.zip ./.build/* > /dev/null
+rm -rf ./.build/*.zip
+
+dotnet publish --output "bin/publish"
+
+find ./src -iname *.csproj | while read line; do
+
+    project_name=$(basename "$line" .csproj)
+
+    publish_path="./src/$project_name/bin/publish"
+    output_path="./.build/$project_name.zip"
+
+    7z a "$output_path" "$publish_path/*" > /dev/null
+
+done

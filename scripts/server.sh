@@ -43,3 +43,11 @@ EOF
 
 sudo systemctl enable nomad.service
 sudo systemctl start nomad
+
+
+# docker registry
+
+host_ip=$(cat /vagrant/host_ip)
+echo '{ "insecure-registries" : ["'$host_ip':5555"] }' | sudo tee /etc/docker/daemon.json
+
+sudo systemctl restart docker

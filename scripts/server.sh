@@ -1,5 +1,10 @@
 #! /bin/bash
 
+host_ip=$(cat /vagrant/host_ip)
+
+echo "$host_ip	artifacts.service.consul" | sudo tee --append /etc/hosts
+echo "$host_ip	registry.service.consul" | sudo tee --append /etc/hosts
+
 (
 cat <<-EOF
 	[Unit]
@@ -47,7 +52,13 @@ sudo systemctl start nomad
 
 # docker registry
 
-host_ip=$(cat /vagrant/host_ip)
-echo '{ "insecure-registries" : ["'$host_ip':5555"] }' | sudo tee /etc/docker/daemon.json
+echo '
+{
+	"insecure-registries" : [
+		"'$host_ip':5000",
+		"registry.service.consul:5000"
+	]
+}' | sudo tee /etc/docker/daemon.json
 
 sudo systemctl restart docker
+

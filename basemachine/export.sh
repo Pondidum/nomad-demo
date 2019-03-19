@@ -2,7 +2,13 @@
 
 set -e
 
+box_name=nomad-demo.box
+
+rm -f $box_name
+
 vagrant up
-vagrant package --name nomad-demo.box
-vagrant box add --name local/nomad nomad-demo.box
+
+vagrant package --output $box_name
+vagrant box add --force --name local/nomad $box_name
+
 vagrant destroy -f

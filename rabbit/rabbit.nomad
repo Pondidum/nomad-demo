@@ -21,7 +21,7 @@ job "rabbit" {
       driver = "docker"
 
       config {
-        image = "pondidum/rabbitmq:consul"
+        image = "registry.service.consul:5000/pondidum/rabbitmq:consul"
         hostname = "${attr.unique.hostname}"
         port_map {
           amqp = 5672

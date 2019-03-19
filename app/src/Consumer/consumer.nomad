@@ -3,7 +3,7 @@ job "consumer" {
   type = "service"
 
   group "consumers" {
-    count = 1
+    count = 5
 
     task "consumer" {
       driver = "exec"

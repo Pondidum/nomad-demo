@@ -7,6 +7,7 @@ namespace Consumer
 {
 	public class Configuration : IDisposable
 	{
+		private static readonly Random Random = new Random();
 		private readonly ConsulClient _consul;
 
 		public Configuration()
@@ -33,9 +34,9 @@ namespace Consumer
 		private async Task<CatalogService> GetService(string serviceName, string tag = null)
 		{
 			var service = await _consul.Catalog.Service(serviceName, tag);
-			var instance = service.Response.First();
+			var index = Random.Next(0, service.Response.Length - 1);
 
-			return instance;
+			return service.Response[index];
 		}
 
 		public void Dispose()

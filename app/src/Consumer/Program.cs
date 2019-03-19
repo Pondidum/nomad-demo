@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jobs;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 
 namespace Consumer
 {
@@ -11,23 +13,41 @@ namespace Consumer
 
 		public static async Task Main(string[] args)
 		{
+			var config = new Configuration();
+			new ConfigurationBuilder()
+				.AddEnvironmentVariables()
+				.AddJsonFile("appsettings.json")
+				.Build()
+				.Bind(config);
+
+			var broker = await config.GetRabbitBroker();
+
 			var bus = Bus.Factory.CreateUsingRabbitMq(c =>
 			{
-				var host = c.Host(new Uri("rabbitmq://localhost"), r =>
+				var host = c.Host(broker, r =>
 				{
 					r.Username("guest");
 					r.Password("guest");
 				});
 
-				c.ReceiveEndpoint(host, "jobs", ep => { ep.Handler<Job>(OnJob); });
+				c.ReceiveEndpoint(host, config.QueueName, ep => ep.Handler<Job>(OnJob));
 			});
 
 			await bus.StartAsync();
 
-			Console.WriteLine("Press any key to exit");
-			Console.ReadKey();
+			var pause = new ManualResetEvent(false);
+			Console.WriteLine("Press Ctrl+C to exit");
 
+			Console.CancelKeyPress += (sender, e) =>
+			{
+				Console.WriteLine("Shutting down...");
+				e.Cancel = true;
+				pause.Set();
+			};
+
+			pause.WaitOne();
 			await bus.StopAsync();
+			config.Dispose();
 		}
 
 		private static async Task OnJob(ConsumeContext<Job> context)
@@ -38,13 +58,5 @@ namespace Consumer
 
 			Console.WriteLine($"Processing {context.Message.Sequence} took {duration.TotalSeconds} seconds");
 		}
-	}
-}
-
-namespace Jobs
-{
-	public class Job
-	{
-		public int Sequence { get; set; }
 	}
 }

@@ -10,9 +10,12 @@ namespace Producer
 	{
 		public static async Task Main(string[] args)
 		{
+			var config = new Configuration();
+			var broker = await config.GetRabbitBroker();
+
 			var bus = Bus.Factory.CreateUsingRabbitMq(c =>
 			{
-				var host = c.Host(new Uri("rabbitmq://localhost"), r =>
+				c.Host(broker, r =>
 				{
 					r.Username("guest");
 					r.Password("guest");
@@ -24,7 +27,7 @@ namespace Producer
 			var total = args
 				.Where(x => int.TryParse(x, out _))
 				.Select(int.Parse)
-				.DefaultIfEmpty(10)
+				.DefaultIfEmpty(1000)
 				.First();
 
 			Console.WriteLine($"Publishing {total} jobs...");
@@ -36,16 +39,9 @@ namespace Producer
 				);
 
 			await bus.StopAsync();
+			config.Dispose();
 
 			Console.WriteLine("Done");
 		}
-	}
-}
-
-namespace Jobs
-{
-	public class Job
-	{
-		public int Sequence { get; set; }
 	}
 }

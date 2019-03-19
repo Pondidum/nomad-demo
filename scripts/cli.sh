@@ -11,6 +11,8 @@ echo ""
 echo "Checking nomad communication..."
 nomad status
 
+sleep 5s
+
 echo "registering artifact server into consul"
 curl --silent \
     --request PUT \

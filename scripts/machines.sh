@@ -10,14 +10,16 @@ registry=$(docker run -d --rm -p 5000:5000 registry:latest)
 docker tag rabbitmq:consul localhost:5000/pondidum/rabbitmq:consul
 docker push localhost:5000/pondidum/rabbitmq:consul
 
-nws -d ./app &
-nws_pid=$!
+nws -p 5050 -d ./app &
 
 
-vagrant up
+#vagrant up
 
 
 consul_data="/d/tmp/consul/"
+
+rm -rf "$consul_data"
+
 consul agent \
     -client 0.0.0.0 \
     -bind "$(cat host_ip)" \
@@ -25,7 +27,6 @@ consul agent \
     -data-dir "$consul_data" \
     -ui \
     &
-consul_pid=$!
 
 sleep 5s
 
@@ -43,16 +44,15 @@ curl --silent \
     --header 'content-type: application/json' \
     --data '{ "ID": "registry", "Name": "registry", "Port": 5000 }'
 
+echo "background jobs:"
+jobs -p
+
+echo ""
 echo "any key to kill things"
 
-echo "consul: $consul_pid"
-echo "nws: $nws_pid"
 
 read -n 1 -s -r
 
-kill $consul_pid
-
-rm -rf "$consul_data"
 docker stop $registry
 
-kill $nws_pid
+kill $(jobs -p)

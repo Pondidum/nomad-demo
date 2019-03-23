@@ -24,6 +24,7 @@ Optionals:
     ```
 1. start the cluster
     ```shell
+    ./scripts/init.sh
     vagrant up
     ```
 1. Run all the demo junk

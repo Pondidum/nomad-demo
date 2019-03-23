@@ -1,6 +1,6 @@
 # Vault Demo
 
-Repository to go with my talk on [Nomad: Kubernetes without the Complexity](https://andydote.co.uk/presentations/index.html?nomad) (**not published yet**).
+Repository to go with my talk on [Nomad: Kubernetes without the Complexity](https://andydote.co.uk/presentations/index.html?nomad).
 
 ## Tooling
 

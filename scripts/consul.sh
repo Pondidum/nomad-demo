@@ -1,6 +1,6 @@
 #! /bin/bash
 
-consul_data="/d/tmp/consul/"
+consul_data=".consul/"
 
 rm -rf "$consul_data"
 

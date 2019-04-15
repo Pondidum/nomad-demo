@@ -2,16 +2,21 @@
 
 set -e
 
-nomad_server=$(cat server_ip)
+docker run -d --rm \
+    --name nomad-registry \
+    -p 5000:5000 \
+    registry:latest
 
-echo 'export NOMAD_ADDR="http://$(cat server_ip):4646"'
-export NOMAD_ADDR="http://$nomad_server:4646"
+docker run -d --rm \
+    --name nomad-artifacts \
+    -p 3030:3030 \
+    -e 'PORT=3030' \
+    -v $PWD/app:/web \
+    halverneus/static-file-server:latest
 
-echo ""
-echo "Checking nomad communication..."
-nomad status
-
-sleep 10s
+echo "pushing consul image to local repository"
+docker tag rabbitmq:consul localhost:5000/pondidum/rabbitmq:consul
+docker push localhost:5000/pondidum/rabbitmq:consul
 
 echo "registering artifact server into consul"
 curl --silent \
@@ -26,8 +31,3 @@ curl --silent \
     --url http://localhost:8500/v1/agent/service/register \
     --header 'content-type: application/json' \
     --data '{ "ID": "registry", "Name": "registry", "Port": 5000 }'
-
-echo ""
-echo "Launching browser tabs..."
-start http://localhost:8500
-start $NOMAD_ADDR

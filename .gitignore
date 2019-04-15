@@ -1,5 +1,5 @@
 .vagrant/
-binaries/
+.consul/
 
 server_ip
 host_ip

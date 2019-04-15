@@ -1,31 +1,65 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "local/nomad"
 
-  config.vm.provider "hyperv" do |h|
+  config.vm.provider "hyperv" do |h, override|
     h.memory = "1024"
     h.linked_clone = true
+
+    override.vm.network "public_network", bridge: "Default Switch"
   end
 
-  config.vm.network "public_network", bridge: "Default Switch"
+  config.vm.provider "virtualbox" do |v, override|
+    v.memory = 1024
+    v.linked_clone = true
+
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
 
   config.vm.define "n1" do |n1|
     n1.vm.hostname = "nomad1"
-    n1.vm.provision "shell", path: "./scripts/server.sh", privileged: false
 
-    n1.trigger.after :up do |trigger|
-      trigger.info  = "writing out ip address"
-      trigger.run_remote = { inline: "ip route get 1 | awk '{print $NF;exit}' > /vagrant/server_ip" }
+    n1.vm.provider "virtualbox" do |v, override|
+
+      override.vm.network "private_network", ip: "192.168.56.101", name: "vboxnet0"
+      override.vm.provision "shell", path: "./scripts/server.sh", privileged: false, args: [ "192.168.56.101" ]
+
     end
+
+    n1.vm.provider "hyperv" do |h, override|
+      override.vm.provision "shell", path: "./scripts/server.sh", privileged: false
+    end
+
   end
 
   config.vm.define "n2" do |n2|
-    n2.vm.hostname = "nomad2"
-    n2.vm.provision "shell", path: "./scripts/client.sh", privileged: false
+   n2.vm.hostname = "nomad2"
+
+   n2.vm.provider "virtualbox" do |v, override|
+
+      override.vm.network "private_network", ip: "192.168.56.102", name: "vboxnet0"
+      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false, args: [ "192.168.56.102" ]
+
+    end
+
+    n2.vm.provider "hyperv" do |h, override|
+      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false
+    end
   end
 
   config.vm.define "n3" do |n3|
-    n3.vm.hostname = "nomad3"
-    n3.vm.provision "shell", path: "./scripts/client.sh", privileged: false
+   n3.vm.hostname = "nomad3"
+
+   n3.vm.provider "virtualbox" do |v, override|
+
+      override.vm.network "private_network", ip: "192.168.56.103", name: "vboxnet0"
+      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false, args: [ "192.168.56.103" ]
+
+    end
+
+    n3.vm.provider "hyperv" do |h, override|
+      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false
+    end
   end
 
 end

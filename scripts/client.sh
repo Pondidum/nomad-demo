@@ -33,6 +33,8 @@ sudo systemctl start consul
 sleep 5
 
 
+host_only_adaptor=$(ifconfig | grep -B1 "inet addr:$this_ip" | awk '$1!="inet" && $1!="--" {print $1}')
+
 (
 cat <<-EOF
     data_dir = "/opt/nomad/data"
@@ -40,7 +42,7 @@ cat <<-EOF
 
     client {
         enabled = true
-        network_interface = "eth1"
+        network_interface = "$host_only_adaptor"
     }
 
     consul {

@@ -7,6 +7,7 @@ namespace Producer
 {
 	public class Configuration : IDisposable
 	{
+		private static readonly Random Random = new Random();
 		private readonly ConsulClient _consul;
 
 		public Configuration()
@@ -31,7 +32,7 @@ namespace Producer
 		private async Task<CatalogService> GetService(string serviceName, string tag = null)
 		{
 			var service = await _consul.Catalog.Service(serviceName, tag);
-			var instance = service.Response.First();
+			var instance = service.Response[Random.Next(0, service.Response.Length - 1)];
 
 			return instance;
 		}

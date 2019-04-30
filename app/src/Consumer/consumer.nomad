@@ -16,7 +16,7 @@ job "consumer" {
       }
 
       artifact {
-        source = "http://artifacts.service.consul:5050/.build/Consumer.zip"
+        source = "http://artifacts.service.consul:3030/.build/Consumer.zip"
       }
     }
   }

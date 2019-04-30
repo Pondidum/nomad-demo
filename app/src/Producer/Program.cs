@@ -17,8 +17,8 @@ namespace Producer
 			{
 				c.Host(broker, r =>
 				{
-					r.Username("guest");
-					r.Password("guest");
+					r.Username("admin");
+					r.Password("admin");
 				});
 			});
 

@@ -26,8 +26,8 @@ namespace Consumer
 			{
 				var host = c.Host(broker, r =>
 				{
-					r.Username("guest");
-					r.Password("guest");
+					r.Username("admin");
+					r.Password("admin");
 				});
 
 				c.ReceiveEndpoint(host, config.QueueName, ep => ep.Handler<Job>(OnJob));

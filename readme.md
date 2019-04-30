@@ -16,12 +16,6 @@ Optionals:
 
 ## Setup
 
-1. create the basemachine:
-    ```shell
-    cd ./basemachine
-    ./fetch.sh
-    ./export.sh
-    ```
 1. start the cluster
     ```shell
     ./scripts/init.sh

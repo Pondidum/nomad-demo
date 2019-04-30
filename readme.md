@@ -18,7 +18,7 @@ Optionals:
 
 1. start the cluster
     ```shell
-    ./scripts/init.sh
+    ./scripts/init.sh   # or make sure there is a host_ip file at repo root with your host machine ip in it
     vagrant up
     ```
 1. Run all the demo junk
@@ -27,10 +27,9 @@ Optionals:
         ./scripts/demo.sh
         ```
     * if you don't, run a separate shell for each of these:
-        * `./scripts/artifacts.sh`
-        * `./scripts/registry.sh`
         * `./scripts/consul.sh`
-1. in an admin shell, run this:
+        * `./scripts/host.sh`
+1. in a shell (as admin on windows), run this:
     ```shell
     export NOMAD_ADDR="http://$(cat server_ip):4646"
     nomad status

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Consul;
 
@@ -14,8 +13,6 @@ namespace Consumer
 		{
 			_consul = new ConsulClient();
 		}
-
-		public string QueueName { get; set; }
 
 		public async Task<Uri> GetRabbitBroker()
 		{

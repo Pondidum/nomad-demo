@@ -25,7 +25,7 @@ docker run -d --rm \
     --name nomad-artifacts \
     -p 3000:3000 \
     -e 'PORT=3000' \
-    -v "$PWD/app:/web" \
+    -v "$PWD/.artifacts:/web" \
     halverneus/static-file-server:latest
 
 echo "==> Pusing rabbitmq:consul to docker registry"

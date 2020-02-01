@@ -1,5 +1,2 @@
 .vagrant/
-.consul/
-
-server_ip
-host_ip
+.artifacts/

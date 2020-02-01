@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = "pondidum/hashibox"
+  config.vm.box = "local/hashibox"
 
   config.vm.provider "hyperv" do |h, override|
     h.memory = "1024"
@@ -8,58 +8,23 @@ Vagrant.configure(2) do |config|
     override.vm.network "public_network", bridge: "Default Switch"
   end
 
-  config.vm.provider "virtualbox" do |v, override|
-    v.memory = 1024
-    v.linked_clone = true
-
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  config.vm.provider "libvirt" do |lv, override|
+    lv.memory = 1024
+    # override.vm.synced_folder "./", "/vagrant",  type: 'nfs'
   end
 
-  config.vm.define "n1" do |n1|
-    n1.vm.hostname = "nomad1"
-
-    n1.vm.provider "virtualbox" do |v, override|
-
-      override.vm.network "private_network", ip: "192.168.56.101", name: "vboxnet0"
-      override.vm.provision "shell", path: "./scripts/server.sh", privileged: false, args: [ "192.168.56.101" ]
-
-    end
-
-    n1.vm.provider "hyperv" do |h, override|
-      override.vm.provision "shell", path: "./scripts/server.sh", privileged: false
-    end
-
+  config.vm.define "one" do |n1|
+    n1.vm.hostname = "one"
   end
 
-  config.vm.define "n2" do |n2|
-   n2.vm.hostname = "nomad2"
-
-   n2.vm.provider "virtualbox" do |v, override|
-
-      override.vm.network "private_network", ip: "192.168.56.102", name: "vboxnet0"
-      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false, args: [ "192.168.56.102" ]
-
-    end
-
-    n2.vm.provider "hyperv" do |h, override|
-      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false
-    end
+  config.vm.define "two" do |n2|
+    n2.vm.hostname = "two"
   end
 
-  config.vm.define "n3" do |n3|
-   n3.vm.hostname = "nomad3"
-
-   n3.vm.provider "virtualbox" do |v, override|
-
-      override.vm.network "private_network", ip: "192.168.56.103", name: "vboxnet0"
-      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false, args: [ "192.168.56.103" ]
-
-    end
-
-    n3.vm.provider "hyperv" do |h, override|
-      override.vm.provision "shell", path: "./scripts/client.sh", privileged: false
-    end
+  config.vm.define "three" do |n3|
+    n3.vm.hostname = "three"
   end
+
+  config.vm.provision "shell", privileged: true, path: './box/common.sh'
 
 end

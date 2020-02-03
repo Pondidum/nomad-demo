@@ -23,6 +23,7 @@ job "rabbit" {
       config {
         image = "registry.service.consul:5000/pondidum/rabbitmq:consul"
         hostname = "${attr.unique.hostname}"
+        dns_servers = ["192.168.121.1"]
         port_map {
           amqp = 5672
           ui = 15672

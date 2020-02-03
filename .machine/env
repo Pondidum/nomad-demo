@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export NOMAD_ADDR=http://one.karhu.xyz:4646

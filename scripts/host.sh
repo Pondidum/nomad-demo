@@ -48,4 +48,8 @@ curl --silent \
     --header 'content-type: application/json' \
     --data '{ "ID": "registry", "Name": "registry", "Port": 5000 }'
 
+echo "==> Consul Status"
+
+consul members
+
 echo "==> Done."

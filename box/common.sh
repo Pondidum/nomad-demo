@@ -42,8 +42,11 @@ rc-service nomad start
 
 echo '
 {
-    "insecure-registries" : [
+    "insecure-registries": [
         "registry.service.consul:5000"
+    ],
+    "dns": [
+      "192.168.121.1"
     ]
 }' | tee /etc/docker/daemon.json
 

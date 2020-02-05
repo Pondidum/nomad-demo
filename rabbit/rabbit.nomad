@@ -31,14 +31,26 @@ job "rabbit" {
         }
       }
 
-      env {
-        RABBITMQ_ERLANG_COOKIE = "rabbitmq"
-        RABBITMQ_DEFAULT_USER = "admin"
-        RABBITMQ_DEFAULT_PASS = "admin"
+      vault {
+        policies = ["rabbit"]
+      }
 
+      env {
         CONSUL_HOST = "${attr.unique.network.ip-address}"
         CONSUL_SVC_PORT = "${NOMAD_HOST_PORT_amqp}"
         CONSUL_SVC_TAGS = "amqp"
+      }
+
+      template {
+        data = <<EOF
+        {{with secret "secret/data/rabbit"}}
+          RABBITMQ_ERLANG_COOKIE="{{.Data.data.cookie | toJSON}}"
+          RABBITMQ_DEFAULT_USER="{{.Data.data.admin_user | toJSON}}"
+          RABBITMQ_DEFAULT_PASS="{{.Data.data.admin_pass | toJSON}}"
+        {{end}}
+        EOF
+        destination = "secrets/file.env"
+        env = true
       }
 
       resources {

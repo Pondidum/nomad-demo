@@ -1,3 +1,4 @@
 #!/bin/bash
 
 export NOMAD_ADDR=http://one.karhu.xyz:4646
+export VAULT_ADDR=http://one.karhu.xyz:8200

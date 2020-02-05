@@ -3,8 +3,8 @@
 set -e
 
 echo "==> Configuring host containers"
-machine_ip=$(ip route get 1 | awk '{print $(NF-2);exit}')
-
+# machine_ip=$(ip route get 1 | awk '{print $(NF-2);exit}')
+machine_ip=$(ip addr show docker0 | awk '$1 == "inet" {gsub(/\/.*$/, "", $2); print $2}')
 echo "    HostIP: $machine_ip"
 
 echo "    Running Consul"
@@ -51,5 +51,20 @@ curl --silent \
 echo "==> Consul Status"
 
 consul members
+
+source .machine/one
+
+echo "==> Writing into Vault"
+
+vault secrets enable -path=secret -version=2 kv
+
+echo 'path "secret/data/rabbit" {
+  capabilities = ["read"]
+}' | vault policy write rabbit -
+
+vault kv put secret/rabbit \
+  cookie="$(cat /proc/sys/kernel/random/uuid)" \
+  admin_user="admin" \
+  admin_pass="admin"
 
 echo "==> Done."
